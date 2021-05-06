@@ -43,9 +43,18 @@ public class CachedSchemaRegistryClient implements SchemaRegistryClient {
   private final Map<String, Map<Integer, Schema>> idCache;
   private final Map<String, Map<Schema, Integer>> versionCache;
 
+  // ---- BEGIN MONKEYPATCH ----
+  public static final Map<String, String> DEFAULT_CONFIG;
+  // ---- END MONKEYPATCH ----
+
   public static final Map<String, String> DEFAULT_REQUEST_PROPERTIES;
 
   static {
+    // ---- BEGIN MONKEYPATCH ----
+    DEFAULT_CONFIG = new HashMap<String, String>();
+    DEFAULT_CONFIG.put(SchemaRegistryClientConfig.BASIC_AUTH_CREDENTIALS_SOURCE, "URL");
+    // ---- END MONKEYPATCH ----
+
     DEFAULT_REQUEST_PROPERTIES = new HashMap<String, String>();
     DEFAULT_REQUEST_PROPERTIES.put("Content-Type", Versions.SCHEMA_REGISTRY_V1_JSON_WEIGHTED);
   }
@@ -59,7 +68,9 @@ public class CachedSchemaRegistryClient implements SchemaRegistryClient {
   }
 
   public CachedSchemaRegistryClient(RestService restService, int identityMapCapacity) {
-    this(restService, identityMapCapacity, null);
+    // ---- BEGIN MONKEYPATCH ----
+    this(restService, identityMapCapacity, DEFAULT_CONFIG);
+    // ---- END MONKEYPATCH ----
   }
 
   public CachedSchemaRegistryClient(
